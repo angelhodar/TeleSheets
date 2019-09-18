@@ -1,7 +1,18 @@
-import requests
 from models import TelegramGroup, GroupMember
 from telegram.ext import CommandHandler, MessageHandler, Filters
-from utils import wks_to_message, get_wks
+from constants import (
+    ONLY_ADMIN,
+    ONLY_GROUPS,
+    INVALID_SHEET
+)
+from utils import (
+    wks_to_message,
+    get_wks,
+    validate_sheet,
+    validate_chat_type,
+    admin_executed,
+    bot_admin
+)
 
 def start(update, context):
     """
@@ -9,21 +20,19 @@ def start(update, context):
     """
     update.message.reply_text('¡Hola! Escribe /ayuda para ver todo en lo que te puedo ayudar')
 
+
+@validate_sheet
+@validate_chat_type
+@admin_executed
+@bot_admin
 def config(update, context):
-    sheet_url = context.args[0]
-    if not requests.get(sheet_url).raise_for_status():
-        if update.message.chat.type == 'group':
-            if update.message.from_user.id in [member.user.id for member in update.message.chat.get_administrators()]:
-                group = TelegramGroup(group_id=update.message.chat_id, sheet_url=sheet_url)
-                group.save()
-            else:
-                update.message.reply_text('Solo un administrador puede ejecutar este comando')
-        else:
-            update.message.reply_text('Este comando solo está disponible en los grupos')
-    else:
-        update.message.reply_text('El link a la hoja de google no es válido. Asegurate de copiarlo bien y vuelve a ejecutar el comando de nuevo')
+    group = TelegramGroup(group_id=update.message.chat_id, sheet_url=context.args[0])
+    group.save()
 
 
+@admin_executed
+@bot_admin
+@validate_chat_type
 def spreadsheet(update, context):
     wks = get_wks('Test')
     message = wks_to_message(wks)
