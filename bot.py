@@ -3,6 +3,7 @@ from telegram.ext import Updater
 from commands import (
     start_handler, 
     sheet_handler,
+    insert_handler,
     unknown_handler
 )
 from extra_handlers import error
@@ -20,6 +21,7 @@ if __name__ == "__main__":
     # Main commands
     dp.add_handler(start_handler)
     dp.add_handler(sheet_handler)
+    dp.add_handler(insert_handler)
     dp.add_handler(unknown_handler)
 
     # Logging error handler

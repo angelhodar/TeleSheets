@@ -1,4 +1,5 @@
 from pygsheets import authorize
+import json
 
 gc = None
 
@@ -11,6 +12,10 @@ def wks_to_message(wks):
             message += '{} : {}\n'.format(key, value)
         message += sep
     return message
+
+def wks_to_json(wks):
+    print(wks.to_json())
+
 
 def get_google_client():
     global gc
