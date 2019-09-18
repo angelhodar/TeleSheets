@@ -1,9 +1,13 @@
 import os
 from telegram.ext import Updater
-from commands import start_handler, sheet_handler
-from extra_handlers import error, unknown_command
+from commands import (
+    start_handler, 
+    sheet_handler,
+    unknown_handler
+)
+from extra_handlers import error
 
-
+# Pipenv loads .env automatically, use dotenv module if not using pipenv
 TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
 
 
@@ -16,7 +20,7 @@ if __name__ == "__main__":
     # Main commands
     dp.add_handler(start_handler)
     dp.add_handler(sheet_handler)
-    dp.add_handler(unknown_command)
+    dp.add_handler(unknown_handler)
 
     # Logging error handler
     dp.add_error_handler(error)
