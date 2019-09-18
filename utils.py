@@ -1,7 +1,12 @@
 from pygsheets import authorize
-import json
 
 gc = None
+
+def get_google_client():
+    global gc
+    gc = gc if gc else authorize(service_account_file='creds.json')
+    return gc
+
 
 def wks_to_message(wks):
     message = ''
@@ -13,13 +18,7 @@ def wks_to_message(wks):
         message += sep
     return message
 
-def wks_to_json(wks):
-    print(wks.to_json())
 
+def get_wks(sheet_name='Test'):
+    return get_google_client().open_(sheet_name).sheet1
 
-def get_google_client():
-    global gc
-    if gc:
-        return gc
-    gc = authorize(service_account_file='creds.json')
-    return gc
