@@ -1,9 +1,31 @@
-import pygsheets
+import os
+from telegram.ext import Updater
+from commands import start_handler, sheet_handler
+from extra_handlers import error, unknown_command
 
-gc = pygsheets.authorize(service_file='creds.json')
 
-sheet = gc.open('AngelHacker').sheet1
+TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
 
-data = sheet.get_all_records()
-print(data)
+
+if __name__ == "__main__":
+
+    # Gets the bot updater and dispatcher
+    updater = Updater(TELEGRAM_TOKEN, use_context=True)
+    dp = updater.dispatcher
+
+    # Main commands
+    dp.add_handler(start_handler)
+    dp.add_handler(sheet_handler)
+    dp.add_handler(unknown_command)
+
+    # Logging error handler
+    dp.add_error_handler(error)
+
+    # Start the Bot
+    updater.start_polling(clean=True)
+
+    # Run the bot until you press Ctrl-C or the process receives SIGINT,
+    # SIGTERM or SIGABRT. This should be used most of the time, since
+    # start_polling() is non-blocking and will stop the bot gracefully.
+    updater.idle()
 

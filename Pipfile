@@ -8,6 +8,7 @@ pylint = "*"
 
 [packages]
 pygsheets = "*"
+python-telegram-bot = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.6"
