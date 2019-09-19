@@ -16,7 +16,7 @@ def get_google_client():
 
 
 def get_wks(sheet_name='Test'):
-    return get_google_client().open_(sheet_name).sheet1
+    return get_google_client().open(sheet_name).sheet1
 
     
 def wks_to_message(wks):

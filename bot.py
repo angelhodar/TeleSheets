@@ -6,6 +6,7 @@ from commands import (
     config_handler, 
     sheet_handler,
     status_handler,
+    service_email_handler,
     unknown_handler
 )
 from extra_handlers import error
@@ -28,6 +29,7 @@ if __name__ == "__main__":
     dp.add_handler(sheet_handler)
     dp.add_handler(status_handler)
     dp.add_handler(config_handler)
+    dp.add_handler(service_email_handler)
     dp.add_handler(unknown_handler)
 
     # Logging error handler
