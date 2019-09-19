@@ -1,3 +1,5 @@
+import os
+import json
 import requests
 from pygsheets import authorize
 from constants import (
@@ -7,16 +9,15 @@ from constants import (
     BOT_ADMIN
 )
 
-gc = None
-
-def get_google_client():
-    global gc
-    gc = gc if gc else authorize(service_account_file='creds.json')
-    return gc
+gc = authorize(service_account_file='creds.json')
 
 
-def get_wks(sheet_name='Test'):
-    return get_google_client().open(sheet_name).sheet1
+def get_client_email():
+    return json.load(os.environ['CREDENTIALS_PATH']['client_email'])
+
+
+def get_wks(sheet='Test', wks_name='Notas'):
+    return gc.open(sheet).worksheet_by_title(wks_name)
 
     
 def wks_to_message(wks):
@@ -71,4 +72,3 @@ def bot_admin(func):
         else:
             update.message.reply_text(BOT_ADMIN)
     return inner
-

@@ -3,9 +3,10 @@ import mongoengine as me
 from telegram.ext import Updater
 from commands import (
     start_handler,
-    config_handler, 
-    sheet_handler,
+    help_handler,
+    sheet_handler, 
     status_handler,
+    califications_handler,
     service_email_handler,
     unknown_handler
 )
@@ -18,7 +19,7 @@ TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
 if __name__ == "__main__":
     
     # Testing db
-    me.connect('Prueba')
+    me.connect('TeleSheets')
 
     # Gets the bot updater and dispatcher
     updater = Updater(TELEGRAM_TOKEN, use_context=True)
@@ -26,9 +27,10 @@ if __name__ == "__main__":
 
     # Main commands
     dp.add_handler(start_handler)
+    dp.add_handler(help_handler)
     dp.add_handler(sheet_handler)
     dp.add_handler(status_handler)
-    dp.add_handler(config_handler)
+    dp.add_handler(califications_handler)
     dp.add_handler(service_email_handler)
     dp.add_handler(unknown_handler)
 
