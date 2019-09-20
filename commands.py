@@ -6,7 +6,7 @@ from utils import (
     parse_user_grades,
     validate_sheet,
     validate_chat_type,
-    admin_executed,
+    enough_privileges,
     bot_admin
 )
 from db import (
@@ -17,6 +17,7 @@ from db import (
     remove_group_member
 )
 from constants import(
+    BOTNAME,
     CONFIG_MESSAGE,
     GROUP_CREATED,
     SHEET_UPDATED,
@@ -39,12 +40,16 @@ def config(update, context):
     """
     context.bot.send_message(chat_id=update.message.chat_id, text=CONFIG_MESSAGE)
 
+
 def commands_list(update, context):
+    """
+    Shows all the available commands
+    """
     context.bot.send_message(chat_id=update.message.chat_id, text=COMMANDS_LIST)
 
 
-@validate_chat_type
-@admin_executed
+@validate_chat_type(['group', 'supergroup'])
+@enough_privileges
 @validate_database_group
 @bot_admin
 def check(update, context):
@@ -56,8 +61,8 @@ def service_email(update, context):
     context.bot.send_message(chat_id=update.message.chat_id, text=get_client_email())
 
 
-@validate_chat_type
-@admin_executed
+@validate_chat_type(['group', 'supergroup'])
+@enough_privileges
 @validate_sheet
 @bot_admin
 def sheet(update, context):
@@ -75,7 +80,7 @@ def sheet(update, context):
 
 
 @bot_admin
-@validate_chat_type
+@validate_chat_type(['group', 'supergroup'])
 @validate_database_group
 def calendar(update, context):
     message = 'No implementado todavia'
@@ -84,7 +89,7 @@ def calendar(update, context):
 
 
 @bot_admin
-@validate_chat_type
+@validate_chat_type(['group', 'supergroup'])
 @validate_database_group
 def asistence(update, context):
     message = 'No implementado todavia'
@@ -93,8 +98,8 @@ def asistence(update, context):
         
 
 @bot_admin
-@validate_chat_type
-@admin_executed
+@validate_chat_type(['group', 'supergroup'])
+@enough_privileges
 @validate_database_group
 def grades(update, context):
     """
@@ -115,7 +120,7 @@ def grades(update, context):
 
 
 @bot_admin
-@validate_chat_type
+@validate_chat_type(['group', 'supergroup'])
 @validate_database_group
 def grade(update, context):
     group = get_db_group(update.message.chat_id)
@@ -145,11 +150,14 @@ def group_member_update(update, context):
     Fires when a member joins/leaves the group
     """
     remove = True if update.message.left_chat_member else False
-    member = update.message.left_chat_member if remove else update.message.new_chat_members[0]
     if remove:
-        remove_group_member(update.message.chat_id, member)
+        remove_group_member(update.message.chat_id, update.message.left_chat_member)
     else:
-        add_group_member(update.message.chat_id, member)
+        for member in update.message.new_chat_members:
+            if member.username == BOTNAME:
+                create_db_group(update.message.chat_id, sheet_url='Not asigned')
+            else:
+                add_group_member(update.message.chat_id, member)
 
 
 # Handlers

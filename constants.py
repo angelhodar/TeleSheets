@@ -1,7 +1,10 @@
 from emoji import emojize
 
+BOTNAME = 'TeleSpreadSheetsBot'
+SHEET_URL_FORMAT = 'docs.google.com/spreadsheets/d/'
 ONLY_ADMIN = emojize('Solo un administrador puede ejecutar este comando :cop:', use_aliases=True)
 ONLY_GROUPS = emojize('Este comando solo está disponible en los grupos :family:', use_aliases=True)
+URL_ERROR = emojize('El link no es una Google Sheet :x:', use_aliases=True)
 INVALID_SHEET = emojize('El link a la hoja de google no es válido :x: Asegurate de copiarlo bien y vuelve a ejecutar el comando de nuevo', use_aliases=True)
 BOT_ADMIN = emojize('Debes darme permisos de administrador del grupo para ejecutar este comando :cop:', use_aliases=True)
 NO_DB_GROUP = emojize('No has enlazado tu Google Sheet todavia! :x: Usa /config para ver cómo hacerlo :clipboard:', use_aliases=True)
