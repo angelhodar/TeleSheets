@@ -3,10 +3,12 @@ import mongoengine as me
 from telegram.ext import Updater
 from commands import (
     start_handler,
-    help_handler,
+    config_handler,
+    commands_list_handler,
+    check_handler,
     sheet_handler, 
     status_handler,
-    califications_handler,
+    grades_handler,
     service_email_handler,
     unknown_handler
 )
@@ -27,10 +29,12 @@ if __name__ == "__main__":
 
     # Main commands
     dp.add_handler(start_handler)
-    dp.add_handler(help_handler)
+    dp.add_handler(config_handler)
+    dp.add_handler(commands_list_handler)
+    dp.add_handler(check_handler)
     dp.add_handler(sheet_handler)
     dp.add_handler(status_handler)
-    dp.add_handler(califications_handler)
+    dp.add_handler(grades_handler)
     dp.add_handler(service_email_handler)
     dp.add_handler(unknown_handler)
 

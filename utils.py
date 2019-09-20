@@ -13,22 +13,27 @@ gc = authorize(service_account_file='creds.json')
 
 
 def get_client_email():
-    return json.load(os.environ['CREDENTIALS_PATH']['client_email'])
+    with open(os.environ['CREDENTIALS_PATH']) as json_file:
+        email = json.load(json_file)['client_email']
+    return email
 
 
-def get_wks(sheet='Test', wks_name='Notas'):
-    return gc.open(sheet).worksheet_by_title(wks_name)
+def get_wks(sheet, wks_name='Notas'):
+    return gc.open_by_url(sheet).worksheet_by_title(wks_name)
 
-    
-def wks_to_message(wks):
-    message = ''
-    sep = '----------------\n'
-    data = wks.get_all_records()
-    for record in data:
-        for key, value in record.items():
-            message += '{} : {}\n'.format(key, value)
-        message += sep
-    return message
+
+def parse_user_grades(data):
+    string = ''
+    for key, value in data.items():
+        string += '{} : {}\n'.format(key, value)
+    return string
+
+
+def find_id_by_nick(nick, members):
+    for m in members:
+        if m.username == nick:
+            return m.user_id
+    return None
 
 
 # Decorators

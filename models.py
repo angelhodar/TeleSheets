@@ -6,7 +6,7 @@ class GroupMember(me.EmbeddedDocument):
 
 class TelegramGroup(me.Document):
     group_id = me.IntField(primary_key=True)
-    sheet_name = me.StringField(required=True)
+    sheet_url = me.StringField(required=True)
     members = me.EmbeddedDocumentListField(GroupMember)
 
     meta = {'collection' : 'TelegramGroups'}
