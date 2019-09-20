@@ -10,6 +10,7 @@ pylint = "*"
 pygsheets = "*"
 python-telegram-bot = "*"
 mongoengine = "*"
+emoji = "*"
 
 [requires]
 python_version = "3.6"

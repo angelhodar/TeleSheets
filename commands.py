@@ -20,7 +20,8 @@ from constants import(
     CONFIG_MESSAGE,
     GROUP_CREATED,
     SHEET_UPDATED,
-    CONFIG_SUCCESSFUL
+    CONFIG_SUCCESSFUL,
+    COMMANDS_LIST
 )
 
 
@@ -39,11 +40,11 @@ def config(update, context):
     context.bot.send_message(chat_id=update.message.chat_id, text=CONFIG_MESSAGE)
 
 def commands_list(update, context):
-    pass
+    context.bot.send_message(chat_id=update.message.chat_id, text=COMMANDS_LIST)
 
 
-@admin_executed
 @validate_chat_type
+@admin_executed
 @validate_database_group
 @bot_admin
 def check(update, context):
@@ -53,12 +54,11 @@ def check(update, context):
 
 def service_email(update, context):
     context.bot.send_message(chat_id=update.message.chat_id, text=get_client_email())
-    update.message.delete()
 
 
-@validate_sheet
 @validate_chat_type
 @admin_executed
+@validate_sheet
 @bot_admin
 def sheet(update, context):
     sheet_url = context.args[0]
@@ -168,6 +168,7 @@ service_email_handler = CommandHandler('email', service_email)
 calendar_handler = CommandHandler('calendario', calendar)
 asistence_handler = CommandHandler('asistencia', asistence)
 grades_handler = CommandHandler('notas', grades)
+grade_handler = CommandHandler('nota', grade)
 
 # Other
 status_handler = MessageHandler(Filters.status_update, group_member_update)

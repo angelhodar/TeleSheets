@@ -9,6 +9,7 @@ from commands import (
     sheet_handler, 
     status_handler,
     grades_handler,
+    grade_handler,
     service_email_handler,
     unknown_handler
 )
@@ -35,6 +36,7 @@ if __name__ == "__main__":
     dp.add_handler(sheet_handler)
     dp.add_handler(status_handler)
     dp.add_handler(grades_handler)
+    dp.add_handler(grade_handler)
     dp.add_handler(service_email_handler)
     dp.add_handler(unknown_handler)
 
