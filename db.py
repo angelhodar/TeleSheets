@@ -1,17 +1,18 @@
 from models import TelegramGroup, GroupMember
-from constants import NO_DB_GROUP
+from constants import NO_SHEET
 
 def validate_database_group(func):
     def inner(update, context):
-        if get_db_group(update.message.chat_id):
+        group = get_db_group(update.message.chat_id)
+        if group.sheet_url:
             return func(update, context)
         else:
-            update.message.reply_text(NO_DB_GROUP)
+            update.message.reply_text(NO_SHEET)
     return inner
 
 
-def create_db_group(group_id, sheet_url):
-    group = TelegramGroup(group_id=group_id, sheet_url=sheet_url)
+def create_db_group(group_id):
+    group = TelegramGroup(group_id=group_id)
     group.save()
 
 
@@ -20,6 +21,12 @@ def get_db_group(group_id):
         return TelegramGroup.objects.get(group_id=group_id)
     except TelegramGroup.DoesNotExist:
         return None
+
+
+def update_group_sheet(group_id, sheet_url):
+    group = get_db_group(group_id)
+    group.update(sheet_url=sheet_url)
+    group.save()
 
 
 def add_group_member(group_id, member):

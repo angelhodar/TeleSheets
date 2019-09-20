@@ -7,7 +7,7 @@ ONLY_GROUPS = emojize('Este comando solo está disponible en los grupos :family:
 URL_ERROR = emojize('El link no es una Google Sheet :x:', use_aliases=True)
 INVALID_SHEET = emojize('El link a la hoja de google no es válido :x: Asegurate de copiarlo bien y vuelve a ejecutar el comando de nuevo', use_aliases=True)
 BOT_ADMIN = emojize('Debes darme permisos de administrador del grupo para ejecutar este comando :cop:', use_aliases=True)
-NO_DB_GROUP = emojize('No has enlazado tu Google Sheet todavia! :x: Usa /config para ver cómo hacerlo :clipboard:', use_aliases=True)
+NO_SHEET = emojize('No has enlazado tu Google Sheet todavia! :x: Usa /config para ver cómo hacerlo :clipboard:', use_aliases=True)
 GROUP_CREATED = emojize('El grupo ha sido configurado con éxito! :white_check_mark:', use_aliases=True)
 SHEET_UPDATED = emojize('La hoja ha sido actualizada con éxito! :white_check_mark:', use_aliases=True)
 CONFIG_SUCCESSFUL = emojize('Tu grupo está configurado satisfactoriamente! :white_check_mark: Ahora solo necesitas invitar al resto de la gente :)', use_aliases=True)

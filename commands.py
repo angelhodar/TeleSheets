@@ -13,6 +13,7 @@ from db import (
     validate_database_group,
     create_db_group,
     get_db_group,
+    update_group_sheet,
     add_group_member,
     remove_group_member
 )
@@ -53,11 +54,17 @@ def commands_list(update, context):
 @validate_database_group
 @bot_admin
 def check(update, context):
+    """
+    Tells admin if the group is correctly configured
+    """
     context.bot.send_message(chat_id=update.message.chat_id, text=CONFIG_SUCCESSFUL)
     update.message.delete()
 
 
 def service_email(update, context):
+    """
+    Sends the email used to share the Google Sheet
+    """
     context.bot.send_message(chat_id=update.message.chat_id, text=get_client_email())
 
 
@@ -66,16 +73,12 @@ def service_email(update, context):
 @validate_sheet
 @bot_admin
 def sheet(update, context):
+    """
+    Configures the Google Sheet for the group passing the url as parameter
+    """
     sheet_url = context.args[0]
-    group = get_db_group(update.message.chat_id)
-    if group:
-        group.update(sheet_url=sheet_url)
-        group.save()
-    else:
-        create_db_group(update.message.chat_id, sheet_url)
-    
-    message = SHEET_UPDATED if group else GROUP_CREATED
-    context.bot.send_message(chat_id=update.message.chat_id, text=message)
+    update_group_sheet(update.message.chat_id, sheet_url)
+    context.bot.send_message(chat_id=update.message.chat_id, text=SHEET_UPDATED)
     update.message.delete()
 
 
@@ -155,7 +158,7 @@ def group_member_update(update, context):
     else:
         for member in update.message.new_chat_members:
             if member.username == BOTNAME:
-                create_db_group(update.message.chat_id, sheet_url='Not asigned')
+                create_db_group(update.message.chat_id)
             else:
                 add_group_member(update.message.chat_id, member)
 
