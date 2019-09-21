@@ -3,20 +3,20 @@ import json
 import requests
 from pygsheets import authorize
 from functools import wraps
-from constants import (
+from src.config.messages import (
     INVALID_SHEET,
     URL_ERROR,
     ONLY_GROUPS,
     ONLY_ADMIN,
     BOT_ADMIN,
-    SHEET_URL_FORMAT
 )
+from src.config import CREDENTIALS_PATH
 
-gc = authorize(service_account_file='creds.json')
+gc = authorize(service_account_file=CREDENTIALS_PATH)
 
 
 def is_valid_url_domain(url):
-    return SHEET_URL_FORMAT in url
+    return 'docs.google.com/spreadsheets/d/' in url
 
 
 def get_admin_ids(chat):
@@ -24,7 +24,7 @@ def get_admin_ids(chat):
 
 
 def get_client_email():
-    with open(os.environ['CREDENTIALS_PATH']) as json_file:
+    with open(CREDENTIALS_PATH) as json_file:
         email = json.load(json_file)['client_email']
     return email
 
@@ -42,9 +42,10 @@ def find_id_by_nick(nick, members):
 
 def parse_row(row, ignore_headers=[]):
     message = ''
-    for key in [k for k in row not in ignore_headers]:
-        if row[key]:
-            message += '{} : {}\n'.format(key, row[key])
+    valid_headers = [header for header in row if header not in ignore_headers]
+    for header in valid_headers:
+        if row[header]:
+            message += '{} : {}\n'.format(header, row[header])
     return message
 
 
@@ -52,7 +53,7 @@ def parse_calendar(wks):
     events = wks.get_all_records(empty_value=None)
     calendar_message = ''
     for event in events:
-        calendar_message += '{}\n\n'.format(parse_row(event))
+        calendar_message += '{}\n'.format(parse_row(event))
     return calendar_message
 
 
@@ -60,11 +61,14 @@ def notify(bot, members, wks, ignore_headers=[], only_one=None):
     students = wks.get_all_records(empty_value=None)
     for student in students:
         user_id = find_id_by_nick(student['Telegram'], members)
-        if user_id:
+        if only_one:
+            if user_id == only_one:
+                message = parse_row(student, ignore_headers=ignore_headers)
+                bot.send_message(chat_id=user_id, text=message)
+                break
+        else:
             message = parse_row(student, ignore_headers=ignore_headers)
             bot.send_message(chat_id=user_id, text=message)
-            if only_one and only_one == user_id:
-                break
 
 
 # Decorators

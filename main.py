@@ -1,26 +1,23 @@
-import os
 import mongoengine as me
 from telegram.ext import Updater
-from commands import (
+from src.commands import (
     start_handler,
     config_handler,
     commands_list_handler,
-    check_handler,
     sheet_handler, 
-    status_handler,
+    check_handler,
+    service_email_handler,
+    calendar_handler,
+    asistence_handler,
     grades_handler,
     grade_handler,
-    service_email_handler,
+    status_handler,
     unknown_handler
 )
-from extra_handlers import error
+from src.extra_handlers import error
+from src.config import TELEGRAM_TOKEN
 
-# Pipenv loads .env automatically, use dotenv module if not using pipenv
-TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
-
-
-if __name__ == "__main__":
-    
+def main():
     # Testing db
     me.connect('TeleSheets')
 
@@ -32,12 +29,14 @@ if __name__ == "__main__":
     dp.add_handler(start_handler)
     dp.add_handler(config_handler)
     dp.add_handler(commands_list_handler)
-    dp.add_handler(check_handler)
     dp.add_handler(sheet_handler)
-    dp.add_handler(status_handler)
+    dp.add_handler(check_handler)
+    dp.add_handler(service_email_handler)
+    dp.add_handler(calendar_handler)
+    dp.add_handler(asistence_handler)
     dp.add_handler(grades_handler)
     dp.add_handler(grade_handler)
-    dp.add_handler(service_email_handler)
+    dp.add_handler(status_handler)
     dp.add_handler(unknown_handler)
 
     # Logging error handler
@@ -50,4 +49,8 @@ if __name__ == "__main__":
     # SIGTERM or SIGABRT. This should be used most of the time, since
     # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
+
+if __name__ == "__main__":
+    main()
+    
 

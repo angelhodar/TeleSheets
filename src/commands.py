@@ -1,5 +1,5 @@
 from telegram.ext import CommandHandler, MessageHandler, Filters
-from utils import (
+from src.utils import (
     get_wks,
     get_client_email,
     find_id_by_nick,
@@ -10,7 +10,7 @@ from utils import (
     restricted,
     bot_admin
 )
-from db import (
+from src.database.db import (
     validate_database_group,
     create_db_group,
     get_db_group,
@@ -18,20 +18,20 @@ from db import (
     add_group_member,
     remove_group_member
 )
-from constants import(
+from src.config.settings import (
     BOTNAME,
-    START_MESSAGE,
+    GRADES_WKS_NAME,
+    ASISTENCE_WKS_NAME,
+    CALENDAR_WKS_NAME
+)
+from src.config.messages import(
+    START_PRIVATE,
+    START_GROUP,
     CONFIG_MESSAGE,
-    GROUP_CREATED,
     SHEET_UPDATED,
     CONFIG_SUCCESSFUL,
     COMMANDS_LIST,
     GRADES_SENT
-)
-from parse import (
-    parse_row,
-    parse_calendar,
-    parse_asistence
 )
 
 
@@ -39,7 +39,8 @@ def start(update, context):
     """
     Simple start command to introduce the bot functionality
     """
-    context.bot.send_message(chat_id=update.message.chat_id, text=START_MESSAGE)
+    message = START_PRIVATE if update.message.chat.type == 'private' else START_GROUP
+    context.bot.send_message(chat_id=update.message.chat_id, text=message)
 
 
 def config(update, context):
@@ -94,7 +95,7 @@ def sheet(update, context):
 @validate_database_group
 def calendar(update, context):
     group = get_db_group(update.message.chat_id)
-    wks = get_wks(group.sheet_url, wks_name='Calendario')
+    wks = get_wks(group.sheet_url, wks_name=GRADES_WKS_NAME)
     message = parse_calendar(wks)
     context.bot.send_message(chat_id=update.message.chat_id, text=message)
     update.message.delete()
@@ -108,7 +109,7 @@ def asistence(update, context):
     Shows the asistence in private message for the requester member
     """
     group = get_db_group(update.message.chat_id)
-    wks = get_wks(group.sheet_url, 'Asistencia')
+    wks = get_wks(group.sheet_url, wks_name=ASISTENCE_WKS_NAME)
     requester = update.message.from_user.id
     notify(context.bot, group.members, wks, ignore_headers=['Telegram'], only_one=requester)
     update.message.delete()
@@ -123,7 +124,7 @@ def grades(update, context):
     Shows the califications in private message for each member
     """
     group = get_db_group(update.message.chat_id)
-    wks = get_wks(group.sheet_url, 'Notas')
+    wks = get_wks(group.sheet_url, wks_name=GRADES_WKS_NAME)
     notify(context.bot, group.members, wks, ignore_headers=['Telegram'])
     context.bot.send_message(chat_id=update.message.chat_id, text=GRADES_SENT)
     update.message.delete()
@@ -137,7 +138,7 @@ def grade(update, context):
     Shows the califications in private message for the requester member
     """
     group = get_db_group(update.message.chat_id)
-    wks = get_wks(group.sheet_url, 'Notas')
+    wks = get_wks(group.sheet_url, wks_name=GRADES_WKS_NAME)
     requester = update.message.from_user.id
     notify(context.bot, group.members, wks, ignore_headers=['Telegram'], only_one=requester)
     update.message.delete()
@@ -160,7 +161,8 @@ def group_member_update(update, context):
         for member in update.message.new_chat_members:
             if member.username == BOTNAME:
                 create_db_group(update.message.chat_id)
-                context.bot.send_message(chat_id=update.message.chat_id, text=START_MESSAGE)
+                message = START_PRIVATE if update.message.chat.type == 'private' else START_GROUP
+                context.bot.send_message(chat_id=update.message.chat_id, text=message)
             else:
                 add_group_member(update.message.chat_id, member)
 

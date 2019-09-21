@@ -1,14 +1,16 @@
-from models import TelegramGroup, GroupMember
-from constants import NO_SHEET
+from .models import TelegramGroup, GroupMember
+from functools import wraps
+from src.config.messages import NO_SHEET
 
 def validate_database_group(func):
-    def inner(update, context):
+    @wraps(func)
+    def wrapper(update, context, *args, **kwargs):
         group = get_db_group(update.message.chat_id)
         if group.sheet_url:
-            return func(update, context)
+            return func(update, context, *args, **kwargs)
         else:
             update.message.reply_text(NO_SHEET)
-    return inner
+    return wrapper
 
 
 def create_db_group(group_id):

@@ -11,6 +11,7 @@ pygsheets = "*"
 python-telegram-bot = "*"
 mongoengine = "*"
 emoji = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.6"
