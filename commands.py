@@ -3,9 +3,11 @@ from utils import (
     get_wks,
     get_client_email,
     find_id_by_nick,
+    parse_calendar,
+    notify,
     validate_sheet,
     validate_chat_type,
-    enough_privileges,
+    restricted,
     bot_admin
 )
 from db import (
@@ -18,6 +20,7 @@ from db import (
 )
 from constants import(
     BOTNAME,
+    START_MESSAGE,
     CONFIG_MESSAGE,
     GROUP_CREATED,
     SHEET_UPDATED,
@@ -36,8 +39,7 @@ def start(update, context):
     """
     Simple start command to introduce the bot functionality
     """
-    message = '¡Hola! Escribe /config para empezar a enlazar este grupo con tu Google Sheet'
-    context.bot.send_message(chat_id=update.message.chat_id, text=message)
+    context.bot.send_message(chat_id=update.message.chat_id, text=START_MESSAGE)
 
 
 def config(update, context):
@@ -55,7 +57,7 @@ def commands_list(update, context):
 
 
 @validate_chat_type(['group', 'supergroup'])
-@enough_privileges
+@restricted
 @validate_database_group
 @bot_admin
 def check(update, context):
@@ -74,7 +76,7 @@ def service_email(update, context):
 
 
 @validate_chat_type(['group', 'supergroup'])
-@enough_privileges
+@restricted
 @validate_sheet
 @bot_admin
 def sheet(update, context):
@@ -102,36 +104,27 @@ def calendar(update, context):
 @validate_chat_type(['group', 'supergroup'])
 @validate_database_group
 def asistence(update, context):
+    """
+    Shows the asistence in private message for the requester member
+    """
     group = get_db_group(update.message.chat_id)
     wks = get_wks(group.sheet_url, 'Asistencia')
-    students = wks.get_all_records(empty_value=None)
-    for student in students:
-        user_id = find_id_by_nick(student['Telegram'], group.members)
-        if user_id:
-            message = parse_asistence(student)
-            context.bot.send_message(chat_id=user_id, text=message)
-            
-    context.bot.send_message(chat_id=update.message.chat_id, text=GRADES_SENT)
+    requester = update.message.from_user.id
+    notify(context.bot, group.members, wks, ignore_headers=['Telegram'], only_one=requester)
     update.message.delete()
         
 
 @bot_admin
 @validate_chat_type(['group', 'supergroup'])
-@enough_privileges
+@restricted
 @validate_database_group
 def grades(update, context):
     """
-    Shows the califications in private message for each user
+    Shows the califications in private message for each member
     """
     group = get_db_group(update.message.chat_id)
     wks = get_wks(group.sheet_url, 'Notas')
-    students = wks.get_all_records(empty_value=None)
-    for student in students:
-        user_id = find_id_by_nick(student['Telegram'], group.members)
-        if user_id:
-            message = parse_row(student, ignore_headers=['Telegram'])
-            context.bot.send_message(chat_id=user_id, text=message)
-            
+    notify(context.bot, group.members, wks, ignore_headers=['Telegram'])
     context.bot.send_message(chat_id=update.message.chat_id, text=GRADES_SENT)
     update.message.delete()
 
@@ -140,17 +133,13 @@ def grades(update, context):
 @validate_chat_type(['group', 'supergroup'])
 @validate_database_group
 def grade(update, context):
+    """
+    Shows the califications in private message for the requester member
+    """
     group = get_db_group(update.message.chat_id)
     wks = get_wks(group.sheet_url, 'Notas')
-    students = wks.get_all_records(empty_value=None)
     requester = update.message.from_user.id
-    for student in students:
-        user_id = find_id_by_nick(student['Telegram'], group.members)
-        if user_id == requester:
-            message = parse_row(student, ignore_headers=['Telegram'])
-            context.bot.send_message(chat_id=requester, text=message)
-            break
-    
+    notify(context.bot, group.members, wks, ignore_headers=['Telegram'], only_one=requester)
     update.message.delete()
 
 
@@ -171,6 +160,7 @@ def group_member_update(update, context):
         for member in update.message.new_chat_members:
             if member.username == BOTNAME:
                 create_db_group(update.message.chat_id)
+                context.bot.send_message(chat_id=update.message.chat_id, text=START_MESSAGE)
             else:
                 add_group_member(update.message.chat_id, member)
 

@@ -40,6 +40,33 @@ def find_id_by_nick(nick, members):
     return None
 
 
+def parse_row(row, ignore_headers=[]):
+    message = ''
+    for key in [k for k in row not in ignore_headers]:
+        if row[key]:
+            message += '{} : {}\n'.format(key, row[key])
+    return message
+
+
+def parse_calendar(wks):
+    events = wks.get_all_records(empty_value=None)
+    calendar_message = ''
+    for event in events:
+        calendar_message += '{}\n\n'.format(parse_row(event))
+    return calendar_message
+
+
+def notify(bot, members, wks, ignore_headers=[], only_one=None):
+    students = wks.get_all_records(empty_value=None)
+    for student in students:
+        user_id = find_id_by_nick(student['Telegram'], members)
+        if user_id:
+            message = parse_row(student, ignore_headers=ignore_headers)
+            bot.send_message(chat_id=user_id, text=message)
+            if only_one and only_one == user_id:
+                break
+
+
 # Decorators
 def validate_sheet(func):
     @wraps(func)
@@ -69,7 +96,7 @@ def validate_chat_type(allowed_types):
     return decorator
 
 
-def enough_privileges(func):
+def restricted(func):
     @wraps(func)
     def wrapper(update, context, *args, **kwargs):
         user = update.message.from_user.id

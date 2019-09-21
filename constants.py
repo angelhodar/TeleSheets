@@ -1,17 +1,31 @@
 from emoji import emojize
 
+# Configuration
 BOTNAME = 'TeleSpreadSheetsBot'
+GRADES_WKS_NAME = 'Notas'
+ASISTENCE_WKS_NAME = 'Asistencia'
+CALENDAR_WKS_NAME = 'Calendario'
+
+# Verification
 SHEET_URL_FORMAT = 'docs.google.com/spreadsheets/d/'
+
+# Warnings
 ONLY_ADMIN = emojize('Solo un administrador puede ejecutar este comando :cop:', use_aliases=True)
 ONLY_GROUPS = emojize('Este comando solo está disponible en los grupos :family:', use_aliases=True)
 URL_ERROR = emojize('El link no es una Google Sheet :x:', use_aliases=True)
 INVALID_SHEET = emojize('El link a la hoja de google no es válido :x: Asegurate de copiarlo bien y vuelve a ejecutar el comando de nuevo', use_aliases=True)
 BOT_ADMIN = emojize('Debes darme permisos de administrador del grupo para ejecutar este comando :cop:', use_aliases=True)
 NO_SHEET = emojize('No has enlazado tu Google Sheet todavia! :x: Usa /config para ver cómo hacerlo :clipboard:', use_aliases=True)
+
+# Confirmations
 GROUP_CREATED = emojize('El grupo ha sido configurado con éxito! :white_check_mark:', use_aliases=True)
 SHEET_UPDATED = emojize('La hoja ha sido actualizada con éxito! :white_check_mark:', use_aliases=True)
 CONFIG_SUCCESSFUL = emojize('Tu grupo está configurado satisfactoriamente! :white_check_mark: Ahora solo necesitas invitar al resto de la gente :)', use_aliases=True)
 GRADES_SENT = emojize('Todas las notas han sido enviadas :bell:', use_aliases=True)
+
+# Commands
+START_MESSAGE = emojize('¡Hola! :smile: Escribe /config para empezar a enlazar este grupo con tu Google Sheet', use_aliases=True)
+# TODO: Añadir emojis aqui y poner lista de tareas en vez de párrafos
 CONFIG_MESSAGE = emojize(
     "Para empezar a configurar tu grupo y enlazarlo con tu Google Sheet, primero"
     " debes crearla en tu Google Drive. Una vez lo hayas hecho, ábrela y verás que hay un botón"
