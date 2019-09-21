@@ -3,7 +3,6 @@ from utils import (
     get_wks,
     get_client_email,
     find_id_by_nick,
-    parse_user_grades,
     validate_sheet,
     validate_chat_type,
     enough_privileges,
@@ -23,7 +22,13 @@ from constants import(
     GROUP_CREATED,
     SHEET_UPDATED,
     CONFIG_SUCCESSFUL,
-    COMMANDS_LIST
+    COMMANDS_LIST,
+    GRADES_SENT
+)
+from parse import (
+    parse_row,
+    parse_calendar,
+    parse_asistence
 )
 
 
@@ -86,7 +91,9 @@ def sheet(update, context):
 @validate_chat_type(['group', 'supergroup'])
 @validate_database_group
 def calendar(update, context):
-    message = 'No implementado todavia'
+    group = get_db_group(update.message.chat_id)
+    wks = get_wks(group.sheet_url, wks_name='Calendario')
+    message = parse_calendar(wks)
     context.bot.send_message(chat_id=update.message.chat_id, text=message)
     update.message.delete()
 
@@ -95,8 +102,16 @@ def calendar(update, context):
 @validate_chat_type(['group', 'supergroup'])
 @validate_database_group
 def asistence(update, context):
-    message = 'No implementado todavia'
-    context.bot.send_message(chat_id=update.message.chat_id, text=message)
+    group = get_db_group(update.message.chat_id)
+    wks = get_wks(group.sheet_url, 'Asistencia')
+    students = wks.get_all_records(empty_value=None)
+    for student in students:
+        user_id = find_id_by_nick(student['Telegram'], group.members)
+        if user_id:
+            message = parse_asistence(student)
+            context.bot.send_message(chat_id=user_id, text=message)
+            
+    context.bot.send_message(chat_id=update.message.chat_id, text=GRADES_SENT)
     update.message.delete()
         
 
@@ -109,16 +124,15 @@ def grades(update, context):
     Shows the califications in private message for each user
     """
     group = get_db_group(update.message.chat_id)
-    wks = get_wks(group.sheet_url)
-    users = wks.get_all_records()
-    for user in users:
-        telegram_nick = user['Telegram']
-        del user['Telegram']
-        user_id = find_id_by_nick(telegram_nick, group.members)
+    wks = get_wks(group.sheet_url, 'Notas')
+    students = wks.get_all_records(empty_value=None)
+    for student in students:
+        user_id = find_id_by_nick(student['Telegram'], group.members)
         if user_id:
-            context.bot.send_message(chat_id=user_id, text=parse_user_grades(user))
+            message = parse_row(student, ignore_headers=['Telegram'])
+            context.bot.send_message(chat_id=user_id, text=message)
             
-    context.bot.send_message(chat_id=update.message.chat_id, text='Todas las notas han sido enviadas!')
+    context.bot.send_message(chat_id=update.message.chat_id, text=GRADES_SENT)
     update.message.delete()
 
 
@@ -127,15 +141,14 @@ def grades(update, context):
 @validate_database_group
 def grade(update, context):
     group = get_db_group(update.message.chat_id)
-    wks = get_wks(group.sheet_url)
-    users = wks.get_all_records()
-    sender = update.message.from_user.id
-    for user in users:
-        telegram_nick = user['Telegram']
-        del user['Telegram']
-        user_id = find_id_by_nick(telegram_nick, group.members)
-        if user_id == sender:
-            context.bot.send_message(chat_id=sender, text=parse_user_grades(user))
+    wks = get_wks(group.sheet_url, 'Notas')
+    students = wks.get_all_records(empty_value=None)
+    requester = update.message.from_user.id
+    for student in students:
+        user_id = find_id_by_nick(student['Telegram'], group.members)
+        if user_id == requester:
+            message = parse_row(student, ignore_headers=['Telegram'])
+            context.bot.send_message(chat_id=requester, text=message)
             break
     
     update.message.delete()
@@ -152,8 +165,7 @@ def group_member_update(update, context):
     """
     Fires when a member joins/leaves the group
     """
-    remove = True if update.message.left_chat_member else False
-    if remove:
+    if update.message.left_chat_member:
         remove_group_member(update.message.chat_id, update.message.left_chat_member)
     else:
         for member in update.message.new_chat_members:

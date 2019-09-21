@@ -29,15 +29,8 @@ def get_client_email():
     return email
 
 
-def get_wks(sheet, wks_name='Notas'):
+def get_wks(sheet, wks_name):
     return gc.open_by_url(sheet).worksheet_by_title(wks_name)
-
-
-def parse_user_grades(data):
-    string = ''
-    for key, value in data.items():
-        string += '{} : {}\n'.format(key, value)
-    return string
 
 
 def find_id_by_nick(nick, members):

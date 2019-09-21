@@ -11,6 +11,7 @@ NO_SHEET = emojize('No has enlazado tu Google Sheet todavia! :x: Usa /config par
 GROUP_CREATED = emojize('El grupo ha sido configurado con éxito! :white_check_mark:', use_aliases=True)
 SHEET_UPDATED = emojize('La hoja ha sido actualizada con éxito! :white_check_mark:', use_aliases=True)
 CONFIG_SUCCESSFUL = emojize('Tu grupo está configurado satisfactoriamente! :white_check_mark: Ahora solo necesitas invitar al resto de la gente :)', use_aliases=True)
+GRADES_SENT = emojize('Todas las notas han sido enviadas :bell:', use_aliases=True)
 CONFIG_MESSAGE = emojize(
     "Para empezar a configurar tu grupo y enlazarlo con tu Google Sheet, primero"
     " debes crearla en tu Google Drive. Una vez lo hayas hecho, ábrela y verás que hay un botón"
