@@ -12,6 +12,7 @@ python-telegram-bot = "*"
 mongoengine = "*"
 emoji = "*"
 python-dotenv = "*"
+sphinx = "*"
 
 [requires]
 python_version = "3.6"
