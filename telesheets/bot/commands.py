@@ -23,7 +23,7 @@ from telesheets.database.db import (
 from telesheets.config.settings import (
     BOTNAME,
     GRADES_WKS_NAME,
-    ASISTENCE_WKS_NAME,
+    ATTENDANCE_WKS_NAME,
     CALENDAR_WKS_NAME
 )
 from telesheets.config.messages import(
@@ -111,7 +111,7 @@ def asistence(update, context):
     Shows the asistence in private message for the requester member
     """
     group = get_db_group(update.message.chat_id)
-    wks = get_wks(group.sheet_url, wks_name=ASISTENCE_WKS_NAME)
+    wks = get_wks(group.sheet_url, wks_name=ATTENDANCE_WKS_NAME)
     requester = update.message.from_user.id
     notify(context.bot, group.members, wks, ignore_headers=['Telegram'], only_one=requester)
     update.message.delete()
