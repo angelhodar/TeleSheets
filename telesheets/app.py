@@ -1,6 +1,6 @@
-import mongoengine as me
 from telegram.ext import Updater
-from src.commands import (
+from telesheets.database import db
+from telesheets.bot.commands import (
     start_handler,
     config_handler,
     commands_list_handler,
@@ -14,12 +14,12 @@ from src.commands import (
     status_handler,
     unknown_handler
 )
-from src.extra_handlers import error
-from src.config import TELEGRAM_TOKEN
+from telesheets.bot.extra_handlers import error
+from telesheets.config import TELEGRAM_TOKEN
 
 def main():
-    # Testing db
-    me.connect('TeleSheets')
+    # Connects to db using the environ vars
+    db.connect()
 
     # Gets the bot updater and dispatcher
     updater = Updater(TELEGRAM_TOKEN, use_context=True)
@@ -40,7 +40,7 @@ def main():
     dp.add_handler(unknown_handler)
 
     # Logging error handler
-    # dp.add_error_handler(error)
+    dp.add_error_handler(error)
 
     # Start the Bot
     updater.start_polling(clean=True)

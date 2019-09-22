@@ -1,30 +1,32 @@
 from telegram.ext import CommandHandler, MessageHandler, Filters
-from src.utils import (
+from telesheets.lib.decorators import (
+    validate_database_group,
+    validate_chat_type,
+    validate_sheet,
+    restricted,
+    bot_admin,
+)
+from telesheets.lib.utils import (
     get_wks,
     get_client_email,
     find_id_by_nick,
     parse_calendar,
-    notify,
-    validate_sheet,
-    validate_chat_type,
-    restricted,
-    bot_admin
+    notify
 )
-from src.database.db import (
-    validate_database_group,
+from telesheets.database.db import (
     create_db_group,
     get_db_group,
     update_group_sheet,
     add_group_member,
     remove_group_member
 )
-from src.config.settings import (
+from telesheets.config.settings import (
     BOTNAME,
     GRADES_WKS_NAME,
     ASISTENCE_WKS_NAME,
     CALENDAR_WKS_NAME
 )
-from src.config.messages import(
+from telesheets.config.messages import(
     START_PRIVATE,
     START_GROUP,
     CONFIG_MESSAGE,

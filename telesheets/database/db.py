@@ -1,16 +1,15 @@
-from .models import TelegramGroup, GroupMember
-from functools import wraps
-from src.config.messages import NO_SHEET
+import mongoengine as me
+from telesheets.database.models import TelegramGroup, GroupMember
+from telesheets.config import (
+    DB_USER,
+    DB_PASSWORD,
+    DB_NAME,
+    DB_HOST
+)
 
-def validate_database_group(func):
-    @wraps(func)
-    def wrapper(update, context, *args, **kwargs):
-        group = get_db_group(update.message.chat_id)
-        if group.sheet_url:
-            return func(update, context, *args, **kwargs)
-        else:
-            update.message.reply_text(NO_SHEET)
-    return wrapper
+def connect():
+    host = DB_HOST.replace('user', DB_USER).replace('password', DB_PASSWORD).replace('db_name', DB_NAME)
+    me.connect(host=host)
 
 
 def create_db_group(group_id):
