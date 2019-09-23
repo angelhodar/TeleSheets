@@ -4,16 +4,16 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+autopep8 = "*"
 pylint = "*"
 
 [packages]
 pygsheets = "*"
-python-telegram-bot = "*"
 mongoengine = "*"
-emoji = "*"
-python-dotenv = "*"
 sphinx = "*"
+python-dotenv = "*"
 pyrogram = {extras = ["fast"],version = "*"}
+emoji = "*"
 
 [requires]
 python_version = "3.6"

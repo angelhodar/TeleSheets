@@ -180,6 +180,7 @@ def on_enter_group(client, message):
     Used to track when the bot is added to a new group
     """
     if client.get_me().id in [member.id for member in message.new_chat_members]:
+        client.send_message(chat_id=message.chat.id, text=START_GROUP)
         db.register_group(message.chat.id)
 
 
