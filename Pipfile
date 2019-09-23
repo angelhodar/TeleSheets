@@ -13,6 +13,7 @@ mongoengine = "*"
 emoji = "*"
 python-dotenv = "*"
 sphinx = "*"
+pyrogram = {extras = ["fast"],version = "*"}
 
 [requires]
 python_version = "3.6"

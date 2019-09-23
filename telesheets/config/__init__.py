@@ -3,7 +3,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
+TELEGRAM_BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
+TELEGRAM_API_ID = os.environ['TELEGRAM_API_ID']
+TELEGRAM_API_HASH = os.environ['TELEGRAM_API_HASH']
 CREDENTIALS_PATH = os.environ['CREDENTIALS_PATH']
 
 try:

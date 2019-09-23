@@ -1,5 +1,5 @@
 import mongoengine as me
-from telesheets.database.models import TelegramGroup, GroupMember
+from telesheets.database.models import TelegramGroup
 from telesheets.config import (
     DB_USER,
     DB_PASSWORD,
@@ -12,9 +12,13 @@ def connect():
     me.connect(host=host)
 
 
-def create_db_group(group_id):
+def register_group(group_id):
     group = TelegramGroup(group_id=group_id)
     group.save()
+
+
+def unregister_group(group_id):
+    get_db_group(group_id).delete()
 
 
 def get_db_group(group_id):
@@ -27,18 +31,4 @@ def get_db_group(group_id):
 def update_group_sheet(group_id, sheet_url):
     group = get_db_group(group_id)
     group.update(sheet_url=sheet_url)
-    group.save()
-
-
-def add_group_member(group_id, member):
-    group_member = GroupMember(user_id=member.id, username=member.username)
-    group = get_db_group(group_id)
-    group.update(push__members=group_member)
-    group.save()
-
-
-def remove_group_member(group_id, member):
-    group_member = GroupMember(user_id=member.id, username=member.username)
-    group = get_db_group(group_id)
-    group.update(pull__members=group_member)
     group.save()

@@ -1,11 +1,27 @@
 from emoji import emojize
 
+# The text needed to execute each command
+START = 'start'
+CONFIG = 'config'
+COMMANDS_LIST = 'comandos'
+SHEET = 'hoja'
+CHECK = 'comprobar'
+EMAIL = 'email'
+CALENDAR = 'calendario'
+ATTENDANCE = 'asistencia'
+GRADE = 'nota'
+GRADES = 'notas'
+
+# The names you are going to give to your worksheets
+GRADES_WKS_NAME = 'Notas'
+ATTENDANCE_WKS_NAME = 'Asistencia'
+CALENDAR_WKS_NAME = 'Calendario'
+
 # Errors
-ONLY_ADMIN = emojize('Solo un administrador puede ejecutar este comando :cop:', use_aliases=True)
-ONLY_GROUPS = emojize('Este comando solo está disponible en los grupos :family:', use_aliases=True)
+COMMAND_ONLY_ADMINS = emojize('Solo un administrador puede ejecutar este comando :cop:', use_aliases=True)
 URL_ERROR = emojize('El link no es una Google Sheet :x:', use_aliases=True)
 INVALID_SHEET = emojize('El link a la hoja de google no es válido :x: Asegurate de copiarlo bien y vuelve a ejecutar el comando de nuevo', use_aliases=True)
-BOT_ADMIN = emojize('Debes darme permisos de administrador del grupo para ejecutar este comando :cop:', use_aliases=True)
+NO_BOT_ADMIN = emojize('Debes darme permisos de administrador del grupo para ejecutar este comando :cop:', use_aliases=True)
 NO_SHEET = emojize('No has enlazado tu Google Sheet todavia! :x: Usa /config para ver cómo hacerlo :clipboard:', use_aliases=True)
 
 # Confirmations
@@ -13,9 +29,11 @@ SHEET_UPDATED = emojize('La hoja ha sido actualizada con éxito! :white_check_ma
 CONFIG_SUCCESSFUL = emojize('Tu grupo está configurado satisfactoriamente! :white_check_mark: Ahora solo necesitas invitar al resto de la gente :)', use_aliases=True)
 GRADES_SENT = emojize(':bell: Todas las notas han sido enviadas :bell:', use_aliases=True)
 
-# Commands
-START_PRIVATE = emojize('¡Hola! :smile: Escribe /config para empezar a enlazar este grupo con tu Google Sheet', use_aliases=True)
-START_GROUP = emojize('¡Hola! :smile: Escribe /config para empezar a enlazar este grupo con tu Google Sheet', use_aliases=True)
+# Static messages for some commands
+START_PRIVATE = emojize('¡Hola! :smile: Ahora te mandaré tus notas y asistencia por aqui cuando tu o tu profesor lo soliciteis :loudspeaker:', use_aliases=True)
+START_GROUP = emojize(
+    "¡Hola! :smile: Antes de nada, asegúrate de darme permisos de administrador! Cuando lo hayas hecho "
+    "escribe /config para empezar a enlazar este grupo con tu Google Sheet", use_aliases=True)
 COMMANDS_LIST = emojize(
     ":smile: /start - Muestra un mensaje de bienvenida y los primeros pasos para configurar tu grupo.\n"
     ":wrench: /config - Tutorial de como enlazar y configurar el grupo con tu Google Sheet.\n"
