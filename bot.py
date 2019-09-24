@@ -44,8 +44,6 @@ from telesheets.config.constants import (
     COMMANDS_LIST
 )
 
-# Initializes the logger
-logger.add("logs/log.log", level="DEBUG", format="{time:D/M/YYYY - HH:mm:ss} | {level} | {module}:{function}:{line} | {message}")
 
 # Initializes the bot
 app = Client("telesheets", api_id=TELEGRAM_API_ID, api_hash=TELEGRAM_API_HASH, bot_token=TELEGRAM_BOT_TOKEN)
@@ -105,7 +103,7 @@ def service_email(client, message):
     """
     Sends the email used to share the Google Sheet
     """
-    logger.info('Sending email message to {}'.format(message.from_user.username))
+    logger.info('Email sent to {}'.format(message.from_user.username))
     client.send_message(chat_id=message.chat.id, text=get_client_email())
 
 
@@ -117,7 +115,6 @@ def sheet(client, message):
     """
     Configures the Google Sheet for the group passing the url as parameter
     """
-    logger.info('Updating sheet for group {}...'.format(message.chat.title))
     sheet_url = message.command[1]
     db.update_group_sheet(message.chat.id, sheet_url)
     logger.info('Sheet updated for group {}'.format(message.chat.title))
