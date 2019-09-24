@@ -15,6 +15,7 @@ python-dotenv = "*"
 pyrogram = {extras = ["fast"],version = "*"}
 emoji = "*"
 sphinx-rtd-theme = "*"
+loguru = "*"
 
 [requires]
 python_version = "3.6"
