@@ -17,10 +17,12 @@ GRADES_WKS_NAME = 'Notas'
 ATTENDANCE_WKS_NAME = 'Asistencia'
 CALENDAR_WKS_NAME = 'Calendario'
 
-# Headers that will be ignored when parsing the corresponding worksheet
-GRADES_IGNORED_HEADERS = ['Telegram']
-ATTENDANCE_IGNORED_HEADERS = ['Telegram']
-CALENDAR_IGNORED_HEADERS = []
+# Dict containing which headers will be ignored when extracting wks data
+IGNORE_HEADERS = {
+    GRADES_WKS_NAME : ['Telegram'],
+    ATTENDANCE_WKS_NAME : ['Telegram'],
+    CALENDAR_WKS_NAME : []
+}
 
 # Errors
 COMMAND_ONLY_ADMINS = emojize('Solo un administrador puede ejecutar este comando :cop:', use_aliases=True)

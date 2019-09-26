@@ -1,6 +1,8 @@
 import json
 from pygsheets import authorize
+from telesheets.database import db
 from telesheets.config import CREDENTIALS_PATH
+from telesheets.config.constants import IGNORE_HEADERS
 
 
 gc = authorize(service_account_file=CREDENTIALS_PATH)
@@ -8,7 +10,7 @@ gc = authorize(service_account_file=CREDENTIALS_PATH)
 
 def get_admin_ids(client, chat_id):
     admin_roles = ['creator', 'administrator']
-    return [admin.user.id for admin in client.iter_chat_members(chat_id) if admin.status in admin_roles]
+    return [member.user.id for member in client.iter_chat_members(chat_id) if member.status in admin_roles]
 
 
 def get_client_email():
@@ -17,7 +19,9 @@ def get_client_email():
     return email
 
 
-def get_wks(sheet, wks_name):
+def get_wks(chat_id, wks_name):
+    group = db.get_db_group(chat_id)
+    sheet = group.sheet_url
     return gc.open_by_url(sheet).worksheet_by_title(wks_name)
 
 
@@ -27,35 +31,36 @@ def find_id_by_nick(nick, members):
     except KeyError:
         return None
 
+# TODO: Convert to generator
+def get_students_data(wks_name, chat_id, telegram_members):
+    wks = get_wks(chat_id, wks_name=wks_name)
+    records = wks.get_all_records(empty_value=None)
+    ignore_headers = IGNORE_HEADERS[wks_name]
+    students = {}
+    for record in records:
+        student_id = find_id_by_nick(record['Telegram'], telegram_members)
+        if student_id:
+            students[student_id] = parse_record(record, ignore_headers)
 
-def parse_row(row, ignore_headers=[]):
-    message = ''
-    valid_headers = [header for header in row if header not in ignore_headers]
-    for header in valid_headers:
-        # Only those ones not empty
-        if row[header]:
-            message += '{} : {}\n'.format(header, row[header])
-    return message
+    return students
 
 
-def parse_calendar(wks):
+def parse_record(row, ignore_headers=[]):
+    return '\n'.join([f'{header} : {value}' for header, value in row.items() if header not in ignore_headers and value])
+
+
+def parse_calendar(wks_name, chat_id):
+    wks = get_wks(chat_id, wks_name=wks_name)
     events = wks.get_all_records(empty_value=None)
-    calendar_message = ''
-    for event in events:
-        calendar_message += '{}\n'.format(parse_row(event))
+    calendar_message = '\n'.join([parse_record(event) for event in events])
     return calendar_message
 
 
-def notify(client, chat_id, wks, ignore_headers=[], only_one=None):
-    students = wks.get_all_records(empty_value=None)
-    members = {m.user.username : m.user.id for m in client.iter_chat_members(chat_id)}
-    for student in students:
-        student_id = find_id_by_nick(student['Telegram'], members)
-        if only_one:
-            if student_id == only_one:
-                message = parse_row(student, ignore_headers=ignore_headers)
-                client.send_message(chat_id=student_id, text=message)
-                break
-        else:
-            message = parse_row(student, ignore_headers=ignore_headers)
-            client.send_message(chat_id=student_id, text=message)
+# TODO: Add break
+def parse_students(client, chat_id, wks_name, invoker):
+    members = {m.user.username: m.user.id for m in client.iter_chat_members(chat_id)}
+    notify_all = invoker in get_admin_ids(client, chat_id)
+    students = get_students_data(wks_name, chat_id, members)
+    for student, data in students.items():
+        if invoker == student or notify_all:
+            client.send_message(chat_id=student, text=data)

@@ -2,10 +2,9 @@ from loguru import logger
 from pyrogram import Client, Filters
 from telesheets.database import db
 from telesheets.lib.utils import (
-    get_wks,
     get_client_email,
     parse_calendar,
-    notify
+    parse_students
 )
 from telesheets.lib.decorators import (
     validate_sheet,
@@ -32,9 +31,6 @@ from telesheets.config.constants import (
     GRADES_WKS_NAME,
     ATTENDANCE_WKS_NAME,
     CALENDAR_WKS_NAME,
-    GRADES_IGNORED_HEADERS,
-    ATTENDANCE_IGNORED_HEADERS,
-    CALENDAR_IGNORED_HEADERS,
     CONFIG_SUCCESSFUL,
     SHEET_UPDATED,
     GRADES_SENT,
@@ -130,11 +126,9 @@ def calendar(client, message):
     Shows the calendar wks in a group message
     """
     logger.info('Parsing calendar wks for group {}...'.format(message.chat.title))
-    group = db.get_db_group(message.chat.id)
-    wks = get_wks(group.sheet_url, wks_name=CALENDAR_WKS_NAME)
-    calendar_message = parse_calendar(wks)
-    logger.info('Calendar sent to group {}'.format(message.chat.title))
+    calendar_message = parse_calendar(CALENDAR_WKS_NAME, message.chat.id)
     client.send_message(chat_id=message.chat.id, text=calendar_message)
+    logger.info('Calendar sent to group {}'.format(message.chat.title))
     message.delete()
 
 
@@ -146,42 +140,20 @@ def attendance(client, message):
     Shows the attendance in private message for the requester member
     """
     logger.info('Parsing attendance for {}...'.format(message.from_user.username))
-    group = db.get_db_group(message.chat.id)
-    wks = get_wks(group.sheet_url, wks_name=ATTENDANCE_WKS_NAME)
-    requester = message.from_user.id
-    logger.info('Attendance data sent to {}'.format(message.from_user.username))
-    notify(client, message.chat.id, wks, ignore_headers=ATTENDANCE_IGNORED_HEADERS, only_one=requester)
+    parse_students(client, message.chat.id, ATTENDANCE_WKS_NAME, message.from_user.id)
     message.delete()
         
 
 @app.on_message(Filters.command(GRADES) & Filters.group)
 @bot_admin
-@restricted
 @group_registered
 def grades(client, message):
     """
     Shows the grades in private message for each member
     """
     logger.info('Parsing grades wks for group {}...'.format(message.chat.title))
-    group = db.get_db_group(message.chat.id)
-    wks = get_wks(group.sheet_url, wks_name=GRADES_WKS_NAME)
-    notify(client, message.chat.id, wks, ignore_headers=GRADES_IGNORED_HEADERS)
-    logger.info('Grades sent for group {}'.format(message.chat.title))
+    parse_students(client, message.chat.id, GRADES_WKS_NAME, message.from_user.id)
     client.send_message(chat_id=message.chat.id, text=GRADES_SENT)
-    message.delete()
-
-
-@app.on_message(Filters.command(GRADE) & Filters.group)
-@bot_admin
-@group_registered
-def grade(client, message):
-    """
-    Shows the grade in private message for the requester member
-    """
-    group = db.get_db_group(message.chat_id)
-    wks = get_wks(group.sheet_url, wks_name=GRADES_WKS_NAME)
-    requester = message.from_user.id
-    notify(client, message.chat.id, wks, ignore_headers=GRADES_IGNORED_HEADERS, only_one=requester)
     message.delete()
 
 
