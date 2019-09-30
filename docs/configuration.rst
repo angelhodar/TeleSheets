@@ -19,13 +19,17 @@ you can just use this command to create a virtual environment and install all th
 
     $ pipenv install
 
-If you dont use pipenv i have also provided a ``requirements.txt`` so dont worry.
+If you dont use pipenv i have also provided a ``requirements.txt`` so using pip is just like this:
+
+.. code-block:: bash
+
+    $ pip install -r requirements.txt
 
 Environment Vars
 ----------------
 
 Now that you have your project ready, you need to setup some environment vars listed below.
-It is always a good practice to keep sensitive data out of the code, thats why we are using it.
+It is always a good practice to keep sensitive data out of the code, thats why we are using them.
 For that, you need to create a ``.env`` file inside the ``telesheets/config`` directory. The vars will
 be loaded into python using the python-dotenv module in the ``__init__.py`` of that directory, so you can
 just use:
@@ -49,7 +53,7 @@ remember to save the ``api_id`` and ``api_hash``.
 Google Cloud
 """"""""""""
 
-* ``CREDENTIALS_PATH`` : The path of your credentials **.json** file you get when creating your Google Service Account.
+* ``CREDENTIALS_PATH`` : The path of your credentials **json** file you get when creating your Google Service Account.
 
 To create your service and get the credentials file you can see `this video <https://www.youtube.com/watch?v=cnPlKLEGR7E/>`_
 that shows all the process (just until minute 3:00) 
@@ -94,9 +98,3 @@ You can check if its running with the following command:
 
 There is another option if you want to avoid installing anything on your computer, which is signing up on the cloud service
 `MongoDB Atlas <https://www.mongodb.com/cloud/atlas>`_, which gives you a 512MB free cluster! (its something).
-
-
-Running your bot
-----------------
-
-To run the bot you just have to run the ``bot.py`` module (no arguments required). If you want to stop it just press Ctrl + C.

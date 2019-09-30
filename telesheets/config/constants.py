@@ -9,7 +9,6 @@ CHECK = 'comprobar'
 EMAIL = 'email'
 CALENDAR = 'calendario'
 ATTENDANCE = 'asistencia'
-GRADE = 'nota'
 GRADES = 'notas'
 
 # The names you are going to give to your worksheets

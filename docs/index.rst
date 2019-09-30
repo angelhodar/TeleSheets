@@ -26,3 +26,7 @@ Features
    :caption: Contents:
 
    configuration.rst
+   settings.rst
+   running.rst
+   todo.rst
+
