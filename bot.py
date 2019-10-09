@@ -26,7 +26,6 @@ from telesheets.config.constants import (
     EMAIL,
     CALENDAR,
     ATTENDANCE,
-    GRADE,
     GRADES,
     GRADES_WKS_NAME,
     ATTENDANCE_WKS_NAME,

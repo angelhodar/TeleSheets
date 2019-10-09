@@ -1,5 +1,5 @@
-Settings
-========
+Custom Settings
+===============
 
 Once you have configured the most important and sensible data of your app, now the last thing is to
 adjust the rest of the app settings to your needs. All the settings are stored in the ``constants.py``

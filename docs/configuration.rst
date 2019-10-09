@@ -1,6 +1,9 @@
 Configuration
 =============
 
+This section will guide you to configure the infraestructure for the app to run, including sensible data
+from some services that you need to obtain.
+
 Getting the project
 -------------------
 
@@ -81,20 +84,14 @@ In order to use mongo, you need to install it to run in your localhost with the 
 
     $ sudo apt update
     $ sudo apt install -y mongod
-    $ sudo systemctl status mongodb
-
-MongoDB also has a nice GUI client which i recommend you to install to have a nice view of your db:
-
-.. code-block:: bash
-
-    $ sudo apt update
-    $ sudo apt install -y mongod
 
 You can check if its running with the following command:
 
 .. code-block:: bash
 
     $ sudo systemctl status mongodb
+
+MongoDB also has a friendly GUI client which i recommend you to install to have a nice view of your db. You can get it from `here <https://www.mongodb.com/download-center/compass>`_.
 
 There is another option if you want to avoid installing anything on your computer, which is signing up on the cloud service
 `MongoDB Atlas <https://www.mongodb.com/cloud/atlas>`_, which gives you a 512MB free cluster! (its something).
