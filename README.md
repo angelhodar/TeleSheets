@@ -1,7 +1,7 @@
 # TeleSheets
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Documentation Status](https://readthedocs.org/projects/telesheets/badge/?version=latest)](https://telesheets.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/telesheets/badge/?version=master)](https://telesheets.readthedocs.io/en/master/?badge=master)
 
 ## Overview
 This app will allow you to connect your Google Sheet with a Telegram group using a set of commands
