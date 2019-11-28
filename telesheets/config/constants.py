@@ -32,7 +32,7 @@ NO_SHEET = emojize('No has enlazado tu Google Sheet todavia! :x: Usa /config par
 
 # Confirmations
 SHEET_UPDATED = emojize('La hoja ha sido actualizada con éxito! :white_check_mark:', use_aliases=True)
-CONFIG_SUCCESSFUL = emojize('Tu grupo está configurado satisfactoriamente! :white_check_mark: Ahora solo necesitas invitar al resto de la gente :)', use_aliases=True)
+CONFIG_SUCCESSFUL = emojize('Tu grupo está configurado satisfactoriamente! :white_check_mark: Ahora solo necesitas invitar al resto de la gente', use_aliases=True)
 GRADES_SENT = emojize(':bell: Todas las notas han sido enviadas :bell:', use_aliases=True)
 
 # Static messages for some commands
@@ -49,20 +49,25 @@ COMMANDS_LIST = emojize(
     ":e-mail: /email - Te envia el email que debes usar para compartir tu Google Sheet\n"
     ":calendar: /calendario - Muestra todos los examenes y tareas pendientes\n"
     ":raising_hand: /asistencia - El miembro del grupo que lo ejecute obtendrá un listado de su asistencia a clase\n"
-    ":100: /nota - El miembro del grupo que lo ejecute obtendrá un listado de sus notas\n"
-    ":bell: /notas - Envía a todos los miembros del grupo un mensaje privado con el listado de notas actualizado\n"
+    ":100: :bell: /notas - El miembro del grupo que lo ejecute obtendrá un listado de sus notas. "
+    "Si es ejecutado por un administrador, cada estudiante recibirá su nota por mensaje privado\n"
 , use_aliases=True)
 CONFIG_MESSAGE = emojize(
     "Para configurar tu grupo y enlazarlo con tu Google Sheet tan solo debes seguir estos pasos :clipboard:\n"
     "1. Usa el comando /email y copia el el email que obtendrás, lo usarás luego para compartir tu Google Sheet conmigo.\n"
-    "2. Ve a tu Google Drive, crea tu hoja y ábrela.\n" 
+    "2. Ve a tu Google Drive y ábre tu Google Sheet (o crea una si todavia ni tienes ninguna).\n" 
     "3. Ahora debes compartir la hoja conmigo usando el email que has copiado antes. Si estás haciendo esto desde el navegador, "
-    "verás un botón verde arriba a la derecha que pone 'Compartir, simplemente haz click, introduce mi email en la caja que aparece y "
+    "verás un botón verde arriba a la derecha que pone 'Compartir, simplemente haz click, introduce mi email y "
     "asegúrate de darme solo el permiso 'Puede ver' para que tu hoja solo la puedas modificar tu (para que te fies de mi :smile:).\n"
     "4. Dale al boon 'Listo' y ya has terminado de configurar tu Google Sheet!\n"
     "5. Ahora copia la url de la hoja (puedes hacerlo desde la propia barra del navegador o si vuelves a pulsar el botón 'Compartir' "
-    "también aparecerá ahi junto con un botón para copiar la url\n"
+    "también aparecerá ahi junto con un botón para copiarla directamente\n"
     "6. Cuando lo tengas copiado, simplemente pon aqui en el chat el comando /hoja <url>, sustituyendo <url> con el link de tu hoja.\n\n"
     "Y con eso ya habrias configurado tu grupo! :white_check_mark: Puedes usar el comando /comprobar para asegurarte de que no te dejas "
     "nada por hacer :mag: Si quieres informacíon sobre todos los comandos que tengo para ofrecerte, usa /comandos :clipboard:"
 , use_aliases=True)
+
+# Other
+
+# A telegram group member with any of these roles will be considered as admin
+ADMIN_ROLES = ['creator', 'administrator']
