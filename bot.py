@@ -7,6 +7,7 @@ from telesheets.lib.utils import (
     notify
 )
 from telesheets.lib.decorators import (
+    only_groups,
     validate_sheet,
     group_registered,
     restricted,
@@ -18,6 +19,7 @@ from telesheets.config import (
     TELEGRAM_API_HASH
 )
 from telesheets.config.constants import (
+    TELEGRAM_GROUP_TYPES,
     START,
     CONFIG,
     COMMANDS,
@@ -41,27 +43,23 @@ from telesheets.config.constants import (
 
 
 # Initializes the bot
-app = Client("telesheets", api_id=TELEGRAM_API_ID, api_hash=TELEGRAM_API_HASH, bot_token=TELEGRAM_BOT_TOKEN)
+app = Client("“telesheets”", api_id=TELEGRAM_API_ID, api_hash=TELEGRAM_API_HASH, bot_token=TELEGRAM_BOT_TOKEN)
 
-@app.on_message(Filters.command(START) & Filters.private)
+@app.on_message(Filters.command(START))
 def start_private(client, message):
     """
     Shows a start message for private conversations
     """
-    logger.info('Sending start message to {}'.format(message.from_user.username))
-    message.reply(START_PRIVATE)
+    if message.chat.type in TELEGRAM_GROUP_TYPES:
+        logger.info('Sending start message to group {}'.format(message.chat.title))
+        client.send_message(chat_id=message.chat.id, text=START_GROUP)
+    else:
+        logger.info('Sending start message to {}'.format(message.from_user.username))
+        message.reply(START_PRIVATE)
 
 
-@app.on_message(Filters.command(START) & Filters.group)
-def start_group(client, message):
-    """
-    Shows a start message for groups
-    """
-    logger.info('Sending start message to group {}'.format(message.chat.title))
-    client.send_message(chat_id=message.chat.id, text=START_GROUP)
-
-
-@app.on_message(Filters.command(CONFIG) & Filters.group)
+@app.on_message(Filters.command(CONFIG))
+@only_groups
 def config(client, message):
     """
     Shows a tutorial about how to link the group with Google Sheets.
@@ -79,7 +77,8 @@ def commands_list(client, message):
     client.send_message(chat_id=message.chat.id, text=COMMANDS_LIST)
 
 
-@app.on_message(Filters.command(CHECK) & Filters.group)
+@app.on_message(Filters.command(CHECK))
+@only_groups
 @restricted
 @group_registered
 @bot_admin
@@ -101,7 +100,8 @@ def service_email(client, message):
     client.send_message(chat_id=message.chat.id, text=get_client_email())
 
 
-@app.on_message(Filters.command(SHEET) & Filters.group)
+@app.on_message(Filters.command(SHEET))
+@only_groups
 @restricted
 @validate_sheet
 @bot_admin
@@ -116,7 +116,8 @@ def sheet(client, message):
     message.delete()
 
 
-@app.on_message(Filters.command(CALENDAR) & Filters.group)
+@app.on_message(Filters.command(CALENDAR))
+@only_groups
 @bot_admin
 @group_registered
 def calendar(client, message):
@@ -130,7 +131,8 @@ def calendar(client, message):
     message.delete()
 
 
-@app.on_message(Filters.command(ATTENDANCE) & Filters.group)
+@app.on_message(Filters.command(ATTENDANCE))
+@only_groups
 @bot_admin
 @group_registered
 def attendance(client, message):
@@ -142,7 +144,8 @@ def attendance(client, message):
     message.delete()
         
 
-@app.on_message(Filters.command(GRADES) & Filters.group)
+@app.on_message(Filters.command(GRADES))
+@only_groups
 @bot_admin
 @group_registered
 def grades(client, message):

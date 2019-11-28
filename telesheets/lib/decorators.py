@@ -4,6 +4,8 @@ from telesheets.lib.utils import get_admin_ids
 from telesheets.database.db import get_db_group
 from telesheets.database.models import TelegramGroup
 from telesheets.config.constants import (
+    TELEGRAM_GROUP_TYPES,
+    ONLY_GROUP_COMMAND,
     NO_SHEET,
     URL_ERROR,
     INVALID_SHEET,
@@ -46,6 +48,16 @@ def restricted(func):
             return func(client, message, *args, **kwargs)
         else:
             message.reply(COMMAND_ONLY_ADMINS)
+    return wrapper
+
+
+def only_groups(func):
+    @wraps(func)
+    def wrapper(client, message, *args, **kwargs):
+        if message.chat.type in TELEGRAM_GROUP_TYPES:
+            return func(client, message, *args, **kwargs)
+        else:
+            message.reply(ONLY_GROUP_COMMAND)
     return wrapper
     
 

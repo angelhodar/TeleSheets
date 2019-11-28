@@ -24,6 +24,7 @@ IGNORE_HEADERS = {
 }
 
 # Errors
+ONLY_GROUP_COMMAND = emojize('Este comando solo puede usarse en grupos :x:', use_aliases=True)
 COMMAND_ONLY_ADMINS = emojize('Solo un administrador puede ejecutar este comando :cop:', use_aliases=True)
 URL_ERROR = emojize('El link no es una Google Sheet :x:', use_aliases=True)
 INVALID_SHEET = emojize('El link a la hoja de google no es válido :x: Asegurate de copiarlo bien y vuelve a ejecutar el comando de nuevo', use_aliases=True)
@@ -71,3 +72,4 @@ CONFIG_MESSAGE = emojize(
 
 # A telegram group member with any of these roles will be considered as admin
 ADMIN_ROLES = ['creator', 'administrator']
+TELEGRAM_GROUP_TYPES = ['group', 'supergroup']
