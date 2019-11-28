@@ -3,14 +3,13 @@ from functools import wraps
 from telesheets.lib.utils import get_admin_ids
 from telesheets.database.db import get_db_group
 from telesheets.database.models import TelegramGroup
-from telesheets.config.constants import (
-    TELEGRAM_GROUP_TYPES,
-    ONLY_GROUP_COMMAND,
-    NO_SHEET,
-    URL_ERROR,
-    INVALID_SHEET,
-    COMMAND_ONLY_ADMINS,
-    NO_BOT_ADMIN
+from telesheets.config.messages import (
+    ONLY_GROUP_COMMAND_MSG,
+    NO_SHEET_MSG,
+    URL_ERROR_MSG,
+    INVALID_SHEET_MSG,
+    COMMAND_ONLY_ADMINS_MSG,
+    NO_BOT_ADMIN_MSG
 )
 
 def group_registered(func):
@@ -20,7 +19,7 @@ def group_registered(func):
         if group.sheet_url:
             return func(client, message, *args, **kwargs)
         else:
-            message.reply(NO_SHEET)
+            message.reply(NO_SHEET_MSG)
     return wrapper
 
 
@@ -33,9 +32,9 @@ def validate_sheet(func):
                 requests.get(url).raise_for_status()
                 return func(client, message, *args, **kwargs)
             except:
-                message.reply(INVALID_SHEET)
+                message.reply(INVALID_SHEET_MSG)
         else:
-            message.reply(URL_ERROR)
+            message.reply(URL_ERROR_MSG)
 
     return wrapper
 
@@ -47,19 +46,9 @@ def restricted(func):
         if user in get_admin_ids(client, message.chat.id):
             return func(client, message, *args, **kwargs)
         else:
-            message.reply(COMMAND_ONLY_ADMINS)
+            message.reply(COMMAND_ONLY_ADMINS_MSG)
     return wrapper
 
-
-def only_groups(func):
-    @wraps(func)
-    def wrapper(client, message, *args, **kwargs):
-        if message.chat.type in TELEGRAM_GROUP_TYPES:
-            return func(client, message, *args, **kwargs)
-        else:
-            message.reply(ONLY_GROUP_COMMAND)
-    return wrapper
-    
 
 def bot_admin(func):
     @wraps(func)
@@ -68,5 +57,5 @@ def bot_admin(func):
         if bot_id in get_admin_ids(client, message.chat.id):
             return func(client, message, *args, **kwargs)
         else:
-            message.reply(NO_BOT_ADMIN)
+            message.reply(NO_BOT_ADMIN_MSG)
     return wrapper

@@ -3,23 +3,25 @@ from pyrogram import Client, Filters
 from telesheets.database import db
 from telesheets.lib.utils import (
     get_client_email,
-    worksheet_to_string,
+    worksheet_to_message,
     notify
 )
+
 from telesheets.lib.decorators import (
-    only_groups,
     validate_sheet,
     group_registered,
     restricted,
     bot_admin,
 )
+
 from telesheets.config import (
     TELEGRAM_BOT_TOKEN,
     TELEGRAM_API_ID,
     TELEGRAM_API_HASH
 )
-from telesheets.config.constants import (
-    TELEGRAM_GROUP_TYPES,
+
+from telesheets.config.commands import (
+    GROUP_COMMANDS,
     START,
     CONFIG,
     COMMANDS,
@@ -28,44 +30,64 @@ from telesheets.config.constants import (
     EMAIL,
     CALENDAR,
     ATTENDANCE,
-    GRADES,
+    GRADES
+)
+
+from telesheets.config.sheets import (
     GRADES_WKS_NAME,
     ATTENDANCE_WKS_NAME,
-    CALENDAR_WKS_NAME,
-    CONFIG_SUCCESSFUL,
-    SHEET_UPDATED,
-    GRADES_SENT,
-    START_PRIVATE,
-    START_GROUP,
-    CONFIG_MESSAGE,
-    COMMANDS_LIST
+    CALENDAR_WKS_NAME
+)
+
+from telesheets.config.messages import (
+    ONLY_GROUP_COMMAND_MSG,
+    CONFIG_SUCCESSFUL_MSG,
+    SHEET_UPDATED_MSG,
+    GRADES_SENT_MSG,
+    START_PRIVATE_MSG,
+    START_GROUP_MSG,
+    CONFIG_MSG,
+    COMMANDS_LIST_MSG
 )
 
 
 # Initializes the bot
-app = Client("“telesheets”", api_id=TELEGRAM_API_ID, api_hash=TELEGRAM_API_HASH, bot_token=TELEGRAM_BOT_TOKEN)
+app = Client(":memory:", api_id=TELEGRAM_API_ID, api_hash=TELEGRAM_API_HASH, bot_token=TELEGRAM_BOT_TOKEN)
 
-@app.on_message(Filters.command(START))
+@app.on_message(Filters.command(GROUP_COMMANDS) & Filters.private)
+def on_wrong_chat_command(client, message):
+    """
+    Sends a message to the user that invokes a command in private
+    chat that should only be invoked in groups
+    """
+    message.reply(ONLY_GROUP_COMMAND_MSG)
+
+
+@app.on_message(Filters.command(START) & Filters.private)
 def start_private(client, message):
     """
     Shows a start message for private conversations
     """
-    if message.chat.type in TELEGRAM_GROUP_TYPES:
-        logger.info('Sending start message to group {}'.format(message.chat.title))
-        client.send_message(chat_id=message.chat.id, text=START_GROUP)
-    else:
-        logger.info('Sending start message to {}'.format(message.from_user.username))
-        message.reply(START_PRIVATE)
+    logger.info('Sending start message to {}'.format(message.from_user.username))
+    message.reply(START_PRIVATE_MSG)
+
+
+@app.on_message(Filters.command(START) & Filters.group)
+def start_group(client, message):
+    """
+    Shows a start message for private conversations
+    """
+    logger.info('Sending start message to group {}'.format(message.chat.title))
+    client.send_message(chat_id=message.chat.id, text=START_GROUP_MSG)
 
 
 @app.on_message(Filters.command(CONFIG))
-@only_groups
 def config(client, message):
     """
     Shows a tutorial about how to link the group with Google Sheets.
     """
     logger.info('Sending config message to group {}'.format(message.chat.title))
-    client.send_message(chat_id=message.chat.id, text=CONFIG_MESSAGE)
+    client.send_message(chat_id=message.chat.id, text=CONFIG_MSG)
 
 
 @app.on_message(Filters.command(COMMANDS))
@@ -74,11 +96,10 @@ def commands_list(client, message):
     Shows all the available commands
     """
     logger.info('Sending commands list to {}'.format(message.from_user.username))
-    client.send_message(chat_id=message.chat.id, text=COMMANDS_LIST)
+    client.send_message(chat_id=message.chat.id, text=COMMANDS_LIST_MSG)
 
 
 @app.on_message(Filters.command(CHECK))
-@only_groups
 @restricted
 @group_registered
 @bot_admin
@@ -87,7 +108,7 @@ def check(client, message):
     Shows if the group is correctly configured
     """
     logger.info('Sending configuration check to group {}'.format(message.chat.title))
-    client.send_message(chat_id=message.chat.id, text=CONFIG_SUCCESSFUL)
+    client.send_message(chat_id=message.chat.id, text=CONFIG_SUCCESSFUL_MSG)
     message.delete()
 
 
@@ -101,10 +122,9 @@ def service_email(client, message):
 
 
 @app.on_message(Filters.command(SHEET))
-@only_groups
 @restricted
-@validate_sheet
 @bot_admin
+@validate_sheet
 def sheet(client, message):
     """
     Configures the Google Sheet for the group passing the url as parameter
@@ -112,12 +132,11 @@ def sheet(client, message):
     sheet_url = message.command[1]
     db.update_group_sheet(message.chat.id, sheet_url)
     logger.info('Sheet updated for group {}'.format(message.chat.title))
-    client.send_message(chat_id=message.chat.id, text=SHEET_UPDATED)
+    client.send_message(chat_id=message.chat.id, text=SHEET_UPDATED_MSG)
     message.delete()
 
 
 @app.on_message(Filters.command(CALENDAR))
-@only_groups
 @bot_admin
 @group_registered
 def calendar(client, message):
@@ -125,14 +144,13 @@ def calendar(client, message):
     Shows the calendar wks in a group message
     """
     logger.info('Parsing calendar wks for group {}...'.format(message.chat.title))
-    calendar = worksheet_to_string(message.chat_id, CALENDAR_WKS_NAME)
+    calendar = worksheet_to_message(message.chat_id, CALENDAR_WKS_NAME)
     client.send_message(chat_id=message.chat.id, text=calendar)
     logger.info('Calendar sent to group {}'.format(message.chat.title))
     message.delete()
 
 
 @app.on_message(Filters.command(ATTENDANCE))
-@only_groups
 @bot_admin
 @group_registered
 def attendance(client, message):
@@ -145,7 +163,6 @@ def attendance(client, message):
         
 
 @app.on_message(Filters.command(GRADES))
-@only_groups
 @bot_admin
 @group_registered
 def grades(client, message):
@@ -154,7 +171,7 @@ def grades(client, message):
     """
     logger.info('Parsing grades wks for group {}...'.format(message.chat.title))
     notify(client, message.chat.id, GRADES_WKS_NAME, message.from_user.id)
-    client.send_message(chat_id=message.chat.id, text=GRADES_SENT)
+    client.send_message(chat_id=message.chat.id, text=GRADES_SENT_MSG)
     message.delete()
 
 
@@ -167,7 +184,7 @@ def on_enter_group(client, message):
     if client.get_me().id in new_members:
         db.register_group(message.chat.id)
         logger.info('New registered group: {}'.format(message.chat.title))
-        client.send_message(chat_id=message.chat.id, text=START_GROUP)
+        client.send_message(chat_id=message.chat.id, text=START_GROUP_MSG)
 
 
 @app.on_message(Filters.left_chat_member)
@@ -180,9 +197,6 @@ def on_leave_group(client, message):
         logger.info('Group {} unregistered'.format(message.chat.title))
 
 
-
 if __name__ == "__main__":
-    # Connects to db using the environ database vars
-    db.connect()
-    # Bot runs using start() and idle() to listen requests (4 threads)
-    app.run()
+    db.connect() # Connects to db using the environ database vars
+    app.run() # Bot runs using start() and idle() to listen requests
