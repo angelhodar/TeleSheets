@@ -50,7 +50,6 @@ from telesheets.config.messages import (
     COMMANDS_LIST_MSG
 )
 
-
 # Initializes the bot
 app = Client(":memory:", api_id=TELEGRAM_API_ID, api_hash=TELEGRAM_API_HASH, bot_token=TELEGRAM_BOT_TOKEN)
 
