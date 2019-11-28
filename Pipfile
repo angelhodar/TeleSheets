@@ -16,6 +16,7 @@ pyrogram = {extras = ["fast"],version = "*"}
 emoji = "*"
 sphinx-rtd-theme = "*"
 loguru = "*"
+dnspython = "*"
 
 [requires]
 python_version = "3.6"
