@@ -6,6 +6,7 @@ from telesheets.config.sheets import IGNORED_HEADERS
 
 gc = authorize(service_account_env_var="CREDENTIALS")
 
+
 def get_client_email():
     return json.loads(CREDENTIALS)['client_email']
 
@@ -31,17 +32,16 @@ def get_group_members(client, chat_id):
     return members
 
 
-def row_to_message(row):
-    return '\n'.join([f'{k}: {v}' for k, v in row.items()])
+def row_to_message(row, ignore_headers=[]):
+    filtered = filter_row(row, ignore_headers=ignore_headers)
+    return '\n'.join([f'{k}: {v}' for k, v in filtered.items()])
 
 
 def worksheet_to_message(chat_id, worksheet_name):
     worksheet = get_worksheet(chat_id, worksheet_name)
     ignore_headers = IGNORED_HEADERS[worksheet_name]
     rows = worksheet.get_all_records(empty_value=None)
-    filtered_rows = [filter_row(
-        row, ignore_headers=ignore_headers) for row in rows]
-    return '\n'.join([row_to_message(row) for row in filtered_rows])
+    return '\n'.join([row_to_message(row, ignore_headers=ignore_headers) for row in rows])
 
 
 def filter_row(row, ignore_headers=[]):
@@ -58,17 +58,19 @@ def iter_students(worksheet, group_members):
         username = row['Telegram']
         if username in group_members.keys():
             student_id = group_members[username]
-            data = filter_row(row)
-            yield student_id, data
+            yield student_id, row
 
 
 def notify(client, chat_id, worksheet_name, invoker):
     members = get_group_members(client, chat_id)
     worksheet = get_worksheet(chat_id, worksheet_name)
+    ignore_headers = IGNORED_HEADERS[worksheet_name]
     notify_everyone = invoker in get_admin_ids(client, chat_id)
+    
     for student_id, data in iter_students(worksheet, members):
+        message = row_to_message(data, ignore_headers=ignore_headers)
         if notify_everyone:
-            client.send_message(chat_id=student_id, text=row_to_message(data))
+            client.send_message(chat_id=student_id, text=message)
         elif student_id == invoker:
-            client.send_message(chat_id=student_id, text=row_to_message(data))
+            client.send_message(chat_id=student_id, text=message)
             break

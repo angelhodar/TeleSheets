@@ -4,10 +4,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
-# Initializes the logger
-logger.add("logs/log.log", level="DEBUG", format="{time:D/M/YYYY - HH:mm:ss} | {level} | {module}:{function}:{line} | {message}")
-
 logger.info('Loading environment vars...')
 
 TELEGRAM_BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
